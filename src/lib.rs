@@ -15,10 +15,12 @@ impl<T:Copy> Video<T> {
     }
 }
 
-#[derive(Serialize, Deserialize,Clone,Debug)]
+#[derive(Serialize, Deserialize,Clone,Debug,PartialEq)]
 #[serde(crate = "rocket::serde")]
 pub enum Message {
     Basic(String),
+    OkSend,
+    WebSend(Box<Message>,i32), 
 }
 
 #[derive(Serialize, Deserialize,Clone,Debug,Copy)]
@@ -46,13 +48,21 @@ pub struct Task {
 }
 
 impl Task {
-    fn send(task:Arc<Mutex<Task>>,data:Message) {
-        task.lock().unwrap().thread.lock().unwrap().send(data);
+    fn WebSend(task:Arc<Mutex<Task>>,data:Message,id:i32) {
+        task.lock().unwrap().thread.lock().unwrap().send(Message::WebSend(Box::new(data),id));
         loop {
-            wait(10);
+            wait(20);
             let mut guard = task.try_lock();
             if guard.is_ok() {
-                
+                let mut guard = guard.unwrap();
+                let mut index:usize = 0;
+                for i in &guard.messages {
+                    if i == &Message::OkSend {
+                        guard.messages.remove(index);
+                        return;
+                    }
+                    index = index + 1;
+                }
             }
         }
     }
