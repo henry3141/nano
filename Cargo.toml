@@ -1,9 +1,13 @@
 [package]
-name = "server"
+name = "nano"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[dependencies.rocket]
+version = "0.5.0-rc.2"
+features = ["json"]
+
 [dependencies]
-rocket = "0.5.0-rc.2"
+rocket_contrib = "0.4.11"

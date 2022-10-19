@@ -15,6 +15,8 @@ impl<T:Copy> Video<T> {
     }
 }
 
+
+
 #[derive(Serialize, Deserialize,Clone,Debug,PartialEq)]
 #[serde(crate = "rocket::serde")]
 pub enum Message {
